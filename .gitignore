@@ -5,6 +5,16 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+#app
+app/
+new-app/
+
+#vagrant
+.vagrant
+
+#ansible
+*.retry
+
 # Runtime data
 pids
 *.pid

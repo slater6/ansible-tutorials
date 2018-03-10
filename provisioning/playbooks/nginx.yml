@@ -66,32 +66,22 @@
     
     - name: Bash aliases | Add aliases
       lineinfile:
-        dest:  /vagrant/.bash_aliases
+        path:  /home/vagrant/.bash_aliases
         group: vagrant
         owner: vagrant
         mode: 0644
         create: yes
         line: 'alias {{ item.alias }}="{{ item.command }}"'
-        regexp: "^alias {{ item.alias }}="
         state: present
+        insertafter: EOF
       with_items: 
-        - { alias: 'app', command: 'docker-compose -f /vagrant/provisioning/docker/docker-compose.dev.yml run --rm -v /vagrant/app:/var -w /var app' }
+        - { alias: 'app', command: 'docker-compose -f /vagrant/provisioning/docker/docker-compose.dev.yml run --rm -v /vagrant:/var -w /var app' }
         - { alias: 'npm', command: 'app npm' }
+        - { alias: 'npm', command: 'app npx' }
         - { alias: 'node', command: 'app node' }
         - { alias: 'yarn', command: 'app yarn' }
-    
-    - name: Source aliases file
-      shell: cd /vagrant && source .bash_aliases
-      args:
-        executable: /bin/bash
        
-    # - name: Create new React App
-    #   command: docker-compose -f docker-compose.dev.yml run --rm -v /vagrant/app:/var -w /var app npx create-react-app new-app
-    #   args:
-    #     chdir: /vagrant/provisioning/docker
-    #     creates: /vagrant/app/new-app/package.json
-
-    # - name: Start React App
-    #   command: docker-compose -f docker-compose.dev.yml run --rm -v /vagrant/app/new-app:/var -w /var app yarn start
-    #   args:
-    #     chdir: /vagrant/provisioning/docker
+    - name: Create new React App
+      command: docker-compose -f /vagrant/provisioning/docker/docker-compose.dev.yml run --rm -v /vagrant:/var -w /var app npx create-react-app new-app
+      args:
+        creates: /vagrant/app/package.json
