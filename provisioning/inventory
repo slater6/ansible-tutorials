@@ -1,0 +1,5 @@
+[loadbalancers]
+nginx ansible_connection=local
+
+[control]
+control ansible_connection=local
