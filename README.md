@@ -3,7 +3,10 @@ vagrant-hostmanager
 vagrant-
 
 todo
-ssh into project directory
 setup nginx routes
+
 setup mongodb
+expose mongo port for remote access
+
 refactor tasks into roles
+version docker images in docker-compose files

@@ -85,6 +85,20 @@
         - { alias: 'npx', command: 'app npx' }
         - { alias: 'node', command: 'app node' }
         - { alias: 'yarn', command: 'app yarn' }
+    
+    - name: Bash profiles | Add profiles
+      lineinfile:
+        path:  /home/vagrant/.profile
+        group: vagrant
+        owner: vagrant
+        mode: 0644
+        create: yes
+        line: "{{ item }}"
+        state: present
+        insertafter: EOF
+      with_items: 
+        - 'cd /vagrant'
+        
        
     - name: Create new React App
       command: docker-compose -f /vagrant/provisioning/docker/docker-compose.dev.yml run --rm -v $(pwd):/var -w /var app npx create-react-app new-app
