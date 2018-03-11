@@ -63,6 +63,11 @@
         files: 
           - "docker-compose.dev.yml"
         state: present
+
+    - name: Delete Aliases file
+      file:
+        state: absent
+        path:  /home/vagrant/.bash_aliases
     
     - name: Bash aliases | Add aliases
       lineinfile:
@@ -71,17 +76,18 @@
         owner: vagrant
         mode: 0644
         create: yes
-        line: 'alias {{ item.alias }}="{{ item.command }}"'
+        line: "alias {{ item.alias }}='{{ item.command }}'"
         state: present
         insertafter: EOF
       with_items: 
-        - { alias: 'app', command: 'docker-compose -f /vagrant/provisioning/docker/docker-compose.dev.yml run --rm -v /vagrant:/var -w /var app' }
+        - { alias: 'app', command: 'docker-compose -f /vagrant/provisioning/docker/docker-compose.dev.yml run --rm -v $(pwd):/var -w /var app' }
         - { alias: 'npm', command: 'app npm' }
-        - { alias: 'npm', command: 'app npx' }
+        - { alias: 'npx', command: 'app npx' }
         - { alias: 'node', command: 'app node' }
         - { alias: 'yarn', command: 'app yarn' }
        
     - name: Create new React App
-      command: docker-compose -f /vagrant/provisioning/docker/docker-compose.dev.yml run --rm -v /vagrant:/var -w /var app npx create-react-app new-app
+      command: docker-compose -f /vagrant/provisioning/docker/docker-compose.dev.yml run --rm -v $(pwd):/var -w /var app npx create-react-app new-app
       args:
-        creates: /vagrant/app/package.json
+        chdir: /vagrant
+        creates: /vagrant/new-app/package.json
