@@ -3,6 +3,12 @@
 
 hostname        =  "ansible.dev"
 
+# Set a local private network IP address.
+# See http://en.wikipedia.org/wiki/Private_network for explanation
+# You can use the following IP ranges:
+#   10.0.0.1    - 10.255.255.254
+#   172.16.0.1  - 172.31.255.254
+#   192.168.0.1 - 192.168.255.254
 server_ip             = "192.168.22.99"
 server_cpus           = "1"   # Cores
 server_memory         = "384" # MB
@@ -12,7 +18,8 @@ server_timezone  = "UTC"
 
 VAGRANTFILE_API_VERSION = "2"
 
-required_plugins = %w( vagrant-hostmanager vagrant-auto_network )
+# Auto install Vagrant plugins
+required_plugins = %w( vagrant-hostmanager vagrant-hostsupdater vagrant-auto_network )
 
 plugins_to_install = required_plugins.select { |plugin| not Vagrant.has_plugin? plugin }
 if not plugins_to_install.empty?
@@ -25,11 +32,29 @@ if not plugins_to_install.empty?
 end
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "ubuntu/trusty64"
-  config.ssh.insert_key = false
+  config.vm.box = "ubuntu/xenial64"
+
+  if Vagrant.has_plugin?("vagrant-hostmanager")
+    config.hostmanager.enabled = true
+    config.hostmanager.manage_host = true
+    config.hostmanager.ignore_private_ip = false
+    config.hostmanager.include_offline = false
+  end
+
+  # Set Host Name
   config.vm.hostname =  hostname
+
+  # Setup Network
+  if Vagrant.has_plugin?("vagrant-auto_network")
+    config.vm.network :private_network, :ip => "0.0.0.0", :auto_network => true
+  else
+    config.vm.network :private_network, ip: server_ip
+    config.vm.network :forwarded_port, guest: 80, host: 8181
+  end
+
   config.ssh.forward_agent = true
-  
+
+  # Sync Folders
   if Vagrant::Util::Platform.windows?
     config.vm.synced_folder ".", "/vagrant",
     id: "core",
@@ -41,15 +66,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     :nfs => true,
     :mount_options => ['nolock,vers=3,udp,noatime,actimeo=2,fsc']
   end
+  
+  config.ssh.insert_key = false
 
-
-  if Vagrant.has_plugin?("vagrant-hostmanager")
-    config.hostmanager.enabled = true
-    config.hostmanager.manage_host = true
-    config.hostmanager.ignore_private_ip = false
-    config.hostmanager.include_offline = false
-  end
-
+  # Setup Server Specs
   config.vm.provider :virtualbox do |v|
     v.name = hostname 
     v.memory = server_memory
@@ -57,13 +77,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
     v.customize ["modifyvm", :id, "--ioapic", "on"]
     v.customize ["guestproperty", "set", :id, "/VirtualBox/GuestAdd/VBoxService/--timesync-set-threshold", 10000]
-  end
-
-  if Vagrant.has_plugin?("vagrant-auto_network")
-    config.vm.network :private_network, :ip => "0.0.0.0", :auto_network => true
-  else
-    config.vm.network :private_network, ip: server_ip
-    config.vm.network :forwarded_port, guest: 80, host: 8181
   end
   
   config.vm.provision "shell", path: "provisioning/scripts/add_repos.sh", privileged: true
@@ -76,6 +89,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provision "ansible_local" do |ansible|
     ansible.install = false
+    ansible.verbose = "vvv"
     ansible.provisioning_path = "/vagrant/provisioning"
     ansible.playbook = "playbooks/nginx.yml"
     ansible.inventory_path = "/vagrant/provisioning/inventory"

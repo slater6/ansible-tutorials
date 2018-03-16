@@ -1,6 +1,4 @@
-install vagrant plugins
-vagrant-hostmanager
-vagrant-
+apt-get libraries to install
 
 todo
 setup nginx routes

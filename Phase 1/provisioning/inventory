@@ -1,0 +1,8 @@
+[loadbalancers]
+nginx ansible_connection=docker ansible_python_interpreter=/usr/bin/python
+
+[app]
+app ansible_connection=docker
+
+[control]
+control ansible_connection=local

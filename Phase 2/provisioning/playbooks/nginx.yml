@@ -1,0 +1,90 @@
+---
+
+########################################
+## Ansible Playbook for installing Nginx
+########################################
+- hosts: control
+  become: true
+  environment:
+    DOCKER_HOST: tcp://{{ansible_default_ipv4.address}}:2375
+    DOCKER_CLIENT_TIMEOUT: 120
+    COMPOSE_HTTP_TIMEOUT: 120
+  tasks:
+    - name: ensure repository key is installed
+      apt_key:
+        id: "58118E89F3A912897C070ADBF76221572C52609D"
+        keyserver: "hkp://p80.pool.sks-keyservers.net:80"
+        state: present
+
+    - name: ensure docker registry is available
+      apt_repository: 
+        repo: deb https://apt.dockerproject.org/repo ubuntu-xenial main
+        state: present
+     
+    - name: apt update
+      apt: 
+        update_cache: yes
+
+    - name: users | adding docker users (for use without sudo)
+      user:
+        name: "vagrant"
+        append: yes
+        groups: docker
+      become: true
+    
+    - name: Installing packages
+      apt: 
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - docker-engine 
+        - python 
+        - python-pip 
+        - libffi-dev 
+        - libssl-dev 
+        - python-dev 
+        - git
+        - python-setuptools
+        - htop
+    
+    - name: Installing Pip
+      easy_install:
+        name: pip
+    
+    - name: Upgrading Pip
+      command: pip install --upgrade pip
+
+    - name: Installing docker compose
+      pip:
+        name: ansible-container[docker]
+        # version: "{{ docker_compose_version if docker_compose_version else omit }}"
+        state: present
+      with_items:
+        - ansible-container[docker]
+        - docker-compose
+   
+    - name: Setup docker to allow access via port rather than socket
+      lineinfile:
+        path:  /etc/systemd/system/multi-user.target.wants/docker.service
+        line: "{{ item }}"
+        regexp: '^ExecStart'
+        state: present
+      with_items: 
+        - "ExecStart=/usr/bin/docker daemon -H 0.0.0.0:2375"
+
+    - name: Restart System Daemon
+      command: systemctl daemon-reload
+    
+    - name: Restart Docker Servce
+      command: service docker restart
+
+    - debug: var=ansible_all_ipv4_addresses
+    - debug: var=ansible_default_ipv4.address
+    
+      # Uncomment the following to enable insecure registries with Docker
+      # - name: ensure docker can use insecure registries in 10.11.0.0/16
+      #  lineinfile: "dest=/etc/default/docker regexp=^DOCKER_OPTS line=DOCKER_OPTS='--insecure-registry 10.11.0.0/16'"
+
+
+
+   

@@ -46,6 +46,7 @@
         state: present
       with_items:
         - python-setuptools
+        - htop
 
     - name: Installing dependencies
       easy_install:
@@ -81,6 +82,7 @@
         insertafter: EOF
       with_items: 
         - { alias: 'app', command: 'docker-compose -f /vagrant/provisioning/docker/docker-compose.dev.yml run --rm -v $(pwd):/var -w /var app' }
+        - { alias: 'nginx', command: 'docker-compose -f /vagrant/provisioning/docker/docker-compose.dev.yml run --rm -v $(pwd):/var -w /var nginx' }
         - { alias: 'npm', command: 'app npm' }
         - { alias: 'npx', command: 'app npx' }
         - { alias: 'node', command: 'app node' }
@@ -101,7 +103,26 @@
         
        
     - name: Create new React App
-      command: docker-compose -f /vagrant/provisioning/docker/docker-compose.dev.yml run --rm -v $(pwd):/var -w /var app npx create-react-app new-app
+      command: docker-compose -f /vagrant/provisioning/docker/docker-compose.dev.yml run --rm -v /vagrant:/var -w /var app npx create-react-app app
       args:
         chdir: /vagrant
-        creates: /vagrant/new-app/package.json
+        creates: /vagrant/app/package.json
+
+#     - name: Container present
+#       docker_container:
+#         name: docker_nginx_1
+#         state: present
+#         image: ubuntu:14.04
+#         command: sleep infinity
+
+# - hosts: nginx
+#   become: true
+#   tasks:
+#     - name: Installing packages
+#       delegate_to: 'docker_nginx_1' 
+#       apt: 
+#         name: "{{ item }}"
+#         state: present
+#       with_items:
+#         - python-simplejson
+
