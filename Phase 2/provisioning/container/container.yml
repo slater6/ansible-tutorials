@@ -10,17 +10,16 @@ services:
   # To use this example, uncomment it and delete the curly braces after services key.
   # You may need to run `docker pull ubuntu:trusty` for this to work.
   nginx:
-    image: nginx
+    from: nginx:perl
     volumes:
      - ../../app:/vagrant
     ports:
       - "80:80"
       - "3000:3000"
-    networks:
-     - sd-net
+
   
   app:
-    image: node:latest
+    from: node:alpine
     volumes:
       - ../../app:/vagrant
       - /app/node_modules
@@ -28,21 +27,15 @@ services:
       - "3000"
     ports:
       - "3001:3001"
-    networks:
-      - sd-net
   
   mongo:
-    image: mongo
+    from: mongo:jessie
     volumes:
       - mongodata:/data/db
     ports:
       - "27017:27017"
-    networks:
-      - sd-net
 
-networks:
-  sd-net:
-    driver: "bridge"
+
 
 volumes:
   mongodata:
