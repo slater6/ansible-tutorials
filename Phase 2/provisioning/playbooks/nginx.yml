@@ -54,3 +54,14 @@
       with_items:
         - ansible-container[docker]
         - docker-compose
+    
+    - name: Build with Ansible Container
+      command: ansible-container build
+      args:
+        chdir: /vagrant/provisioning/container
+
+    - name: Run Ansible Container
+      command: ansible-container run
+      args:
+        chdir: /vagrant/provisioning/container
+

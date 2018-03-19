@@ -1,39 +1,34 @@
 version: "2"
 settings:
   conductor:
-    base: 'ubuntu:xenial'
+    base: 'ubuntu:trusty'
   project_name: hello-world
-  roles_path:
-    - /vagrant/provisioning/roles/provision
 services: 
   # Add your containers here, specifying the base image you want to build from.
   # To use this example, uncomment it and delete the curly braces after services key.
   # You may need to run `docker pull ubuntu:trusty` for this to work.
   nginx:
     from: nginx:perl
-    volumes:
-     - ../../app:/vagrant
     ports:
       - "80:80"
       - "3000:3000"
 
   
-  app:
-    from: node:alpine
-    volumes:
-      - ../../app:/vagrant
-      - /app/node_modules
-    expose:
-      - "3000"
-    ports:
-      - "3001:3001"
+  # app:
+  #   from: node:alpine
+  #   volumes:
+  #     - ../../app:/vagrant
+  #   expose:
+  #     - "3000"
+  #   ports:
+  #     - "3001:3001"
   
-  mongo:
-    from: mongo:jessie
-    volumes:
-      - mongodata:/data/db
-    ports:
-      - "27017:27017"
+  # mongo:
+  #   from: mongo:jessie
+  #   volumes:
+  #     - mongodata:/data/db
+  #   ports:
+  #     - "27017:27017"
 
 
 
