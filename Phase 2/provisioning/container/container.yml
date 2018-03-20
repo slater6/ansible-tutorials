@@ -7,8 +7,10 @@ services:
   # Add your containers here, specifying the base image you want to build from.
   # To use this example, uncomment it and delete the curly braces after services key.
   # You may need to run `docker pull ubuntu:trusty` for this to work.
-  nginx:
-    from: nginx:perl
+  web:
+    from: ubuntu:trusty
+    roles:
+      - bennojoy.nginx
     ports:
       - "80:80"
       - "3000:3000"

@@ -1,0 +1,17 @@
+version: '2'
+services:
+  nginx:
+    build: ./nginx
+    volumes:
+      - ../../app:/var/www/html
+      - ../playbooks:/var/playbooks
+    networks:
+      - sd-net
+  
+networks:
+  sd-net:
+    driver: "bridge"
+
+volumes:
+  mongodata:
+    driver: "local"

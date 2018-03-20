@@ -1,0 +1,105 @@
+---
+
+########################################
+## Ansible Playbook for installing Nginx
+########################################
+- hosts: control
+  become: true 
+  tasks:
+    - name: ensure repository key is installed
+      apt_key:
+        id: "58118E89F3A912897C070ADBF76221572C52609D"
+        keyserver: "hkp://p80.pool.sks-keyservers.net:80"
+        state: present
+
+    - name: ensure docker registry is available
+      # For Ubuntu 14.04 LTS, use this repository:
+      apt_repository: repo='deb https://apt.dockerproject.org/repo ubuntu-trusty main' state=present
+      # For Ubuntu 16.04 LTS, use this repo instead:
+      # apt_repository: repo='deb https://apt.dockerproject.org/repo ubuntu-xenial main' state=present
+    
+    - name: apt update
+      apt: 
+        update_cache: yes
+    
+    - name: ensure docker and dependencies are installed
+      apt: 
+        name: docker-engine 
+        state: present
+
+      # Uncomment the following to enable insecure registries with Docker
+      # - name: ensure docker can use insecure registries in 10.11.0.0/16
+      #  lineinfile: "dest=/etc/default/docker regexp=^DOCKER_OPTS line=DOCKER_OPTS='--insecure-registry 10.11.0.0/16'"
+
+    - service: name=docker state=restarted
+
+    - name: users | adding docker users (for use without sudo)
+      user:
+        name: "vagrant"
+        append: yes
+        groups: docker
+      become: true
+
+    - name: Installing packages
+      apt: 
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - python-setuptools
+        - htop
+
+    - name: Installing dependencies
+      easy_install:
+        name: pip
+
+    - name: Installing docker compose
+      pip:
+        name: docker-compose
+        state: present
+
+    - name: Start Up Docker Compose
+      docker_service:
+        project_src: /vagrant/provisioning/docker
+        files: 
+          - "docker-compose.dev.yml"
+        state: present
+
+    - name: Delete Aliases file
+      file:
+        state: absent
+        path:  /home/vagrant/.bash_aliases
+    
+    - name: Bash aliases | Add aliases
+      lineinfile:
+        path:  /home/vagrant/.bash_aliases
+        group: vagrant
+        owner: vagrant
+        mode: 0644
+        create: yes
+        line: "alias {{ item.alias }}='{{ item.command }}'"
+        state: present
+        insertafter: EOF
+      with_items: 
+        - { alias: 'app', command: 'docker-compose -f /vagrant/provisioning/docker/docker-compose.dev.yml run --rm -v $(pwd):/var -w /var app' }
+        - { alias: 'nginx', command: 'docker-compose -f /vagrant/provisioning/docker/docker-compose.dev.yml run --rm -v $(pwd):/var -w /var nginx' }
+        - { alias: 'npm', command: 'app npm' }
+        - { alias: 'npx', command: 'app npx' }
+        - { alias: 'node', command: 'app node' }
+        - { alias: 'yarn', command: 'app yarn' }
+    
+    - name: Bash profiles | Add profiles
+      lineinfile:
+        path:  /home/vagrant/.profile
+        group: vagrant
+        owner: vagrant
+        mode: 0644
+        create: yes
+        line: "{{ item }}"
+        state: present
+        insertafter: EOF
+      with_items: 
+        - 'cd /vagrant'
+        
+       
+    - name: Provision Nginx
+      command: docker-compose -f /vagrant/provisioning/docker/docker-compose.dev.yml run --rm -w /var nginx ansible-playbook ./playbooks/nginx.yml -c local`

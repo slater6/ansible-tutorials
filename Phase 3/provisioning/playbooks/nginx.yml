@@ -1,0 +1,9 @@
+---
+
+########################################
+## Ansible Playbook for installing Nginx
+########################################
+- hosts: all
+  become: true
+  roles:
+    - role: geerlingguy.nginx
