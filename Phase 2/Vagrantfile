@@ -32,7 +32,7 @@ if not plugins_to_install.empty?
 end
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "ubuntu/trusty64"
+  config.vm.box = "ubuntu/xenial64"
 
   if Vagrant.has_plugin?("vagrant-hostmanager")
     config.hostmanager.enabled = true
@@ -91,7 +91,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     ansible.install = false
     ansible.verbose = "vvv"
     ansible.provisioning_path = "/vagrant/provisioning"
-    ansible.playbook = "playbooks/nginx.yml"
+    ansible.playbook = "playbooks/control.yml"
     ansible.inventory_path = "/vagrant/provisioning/inventory"
     ansible.become = true
     ansible.limit = "all"

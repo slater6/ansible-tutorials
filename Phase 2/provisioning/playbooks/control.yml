@@ -14,7 +14,7 @@
 
     - name: ensure docker registry is available
       apt_repository: 
-        repo: deb https://apt.dockerproject.org/repo ubuntu-trusty main
+        repo: deb https://apt.dockerproject.org/repo ubuntu-xenial main
         state: present
     
     - name: apt update
@@ -53,15 +53,14 @@
         state: present
       with_items:
         - ansible-container[docker]
-        - docker-compose
     
-    - name: Build with Ansible Container
-      command: ansible-container build
-      args:
-        chdir: /vagrant/provisioning/container
+    # - name: Build with Ansible Container
+    #   command: ansible-container build
+    #   args:
+    #     chdir: /vagrant/provisioning/container
 
-    - name: Run Ansible Container
-      command: ansible-container run
-      args:
-        chdir: /vagrant/provisioning/container
+    # - name: Run Ansible Container
+    #   command: ansible-container run
+    #   args:
+    #     chdir: /vagrant/provisioning/container
 

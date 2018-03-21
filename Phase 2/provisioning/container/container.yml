@@ -1,20 +1,23 @@
 version: "2"
 settings:
   conductor:
-    base: 'ubuntu:trusty'
+    base: ubuntu:xenial
+    volumes:
+      - ./roles:/etc/ansible/roles
   project_name: hello-world
+  
 services: 
   # Add your containers here, specifying the base image you want to build from.
   # To use this example, uncomment it and delete the curly braces after services key.
   # You may need to run `docker pull ubuntu:trusty` for this to work.
   web:
-    from: ubuntu:trusty
+    from: ubuntu:xenial
     roles:
-      - bennojoy.nginx
+      - geerlingguy.nginx
     ports:
       - "80:80"
       - "3000:3000"
-
+    command: ["nginx", "-g", "daemon off;"]
   
   # app:
   #   from: node:alpine
@@ -34,6 +37,6 @@ services:
 
 
 
-volumes:
-  mongodata:
-    driver: "local"
+# volumes:
+#   mongodata:
+#     driver: "local"
