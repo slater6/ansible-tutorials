@@ -53,9 +53,10 @@
         state: present
       with_items:
         - ansible-container[docker]
+
     
     # - name: Build with Ansible Container
-    #   command: ansible-container build
+    #   command: ansible-container --debug build
     #   args:
     #     chdir: /vagrant/provisioning/container
 
@@ -64,3 +65,44 @@
     #   args:
     #     chdir: /vagrant/provisioning/container
 
+    - name: Delete Aliases file
+      file:
+        state: absent
+        path:  /home/vagrant/.bash_aliases
+    
+    - name: Bash aliases | Add aliases
+      lineinfile:
+        path:  /home/vagrant/.bash_aliases
+        group: vagrant
+        owner: vagrant
+        mode: 0644
+        create: yes
+        line: "alias {{ item.alias }}='{{ item.command }}'"
+        state: present
+        insertafter: EOF
+      with_items: 
+        - { alias: 'app', command: 'docker run --rm -v $(pwd):/var -w /var hello-world-app' }
+        - { alias: 'nginx', command: 'docker run --rm -v $(pwd):/var -w /var nginx' }
+        - { alias: 'npm', command: 'app npm' }
+        - { alias: 'npx', command: 'app npx' }
+        - { alias: 'node', command: 'app node' }
+        - { alias: 'yarn', command: 'app yarn' }
+      
+    - name: Bash profiles | Add profiles
+      lineinfile:
+        path:  /home/vagrant/.profile
+        group: vagrant
+        owner: vagrant
+        mode: 0644
+        create: yes
+        line: "{{ item }}"
+        state: present
+        insertafter: EOF
+      with_items: 
+        - 'cd /vagrant'
+        
+    - name: Create new React App
+      command: docker run --rm -v /vagrant:/var -w /var hello-world-app npx create-react-app app
+      args:
+        chdir: /vagrant
+        creates: /vagrant/app/package.json

@@ -14,29 +14,17 @@ services:
     from: ubuntu:xenial
     roles:
       - geerlingguy.nginx
-    ports:
-      - "80:80"
-      - "3000:3000"
     command: ["nginx", "-g", "daemon off;"]
   
-  # app:
-  #   from: node:alpine
-  #   volumes:
-  #     - ../../app:/vagrant
-  #   expose:
-  #     - "3000"
-  #   ports:
-  #     - "3001:3001"
+  app:
+    from: ubuntu:xenial
+    roles:
+      - geerlingguy.git
+      - geerlingguy.nodejs
+    command: ["node"]
   
-  # mongo:
-  #   from: mongo:jessie
-  #   volumes:
-  #     - mongodata:/data/db
-  #   ports:
-  #     - "27017:27017"
-
-
-
-# volumes:
-#   mongodata:
-#     driver: "local"
+  db:
+    from: ubuntu:xenial
+    roles:
+      - Stouts.mongodb
+    command: ["mongod"]
