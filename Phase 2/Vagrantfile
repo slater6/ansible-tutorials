@@ -60,11 +60,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     id: "core",
     :nfs => true,
     :mount_options => ["dmode=777", "fmode=777"]
-  else
-    config.vm.synced_folder ".", "/vagrant",
-    id: "core",
-    :nfs => true,
-    :mount_options => ['nolock,vers=3,udp,noatime,actimeo=2,fsc']
   end
   
   config.ssh.insert_key = false

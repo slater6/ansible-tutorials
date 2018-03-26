@@ -32,8 +32,11 @@
       user:
         name: "vagrant"
         append: yes
-        groups: docker
+        groups: "{{ item }}"
       become: true
+      with_items:
+        - docker
+        - dialout
 
     - name: Installing packages
       apt: 
