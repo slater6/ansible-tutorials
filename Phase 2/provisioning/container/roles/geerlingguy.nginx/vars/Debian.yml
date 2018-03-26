@@ -7,3 +7,16 @@ nginx_pidfile: /run/nginx.pid
 nginx_vhost_path: /etc/nginx/sites-enabled
 nginx_default_vhost_path: /etc/nginx/sites-enabled/default
 __nginx_user: "www-data"
+
+nginx_vhosts:
+  - listen: "80"
+    server_name: "ansible.dev"
+    root: "/var/www/html"
+    state: "present"
+    template: "{{ nginx_vhost_template }}"
+    filename: "default"
+    extra_parameters: |
+      location / {
+        proxy_pass http://127.0.0.1:3000;
+      }
+
