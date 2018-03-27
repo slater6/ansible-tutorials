@@ -14,8 +14,6 @@ services:
     from: ubuntu:xenial
     roles:
       - geerlingguy.nginx
-    volumes:
-      - /home/vagrant/app:/var/www/html
     ports:
       - "80:80"
     command: ["nginx", "-g", "daemon off;"]
@@ -26,15 +24,15 @@ services:
       - geerlingguy.git
       - geerlingguy.nodejs
     volumes:
-      - /home/vagrant/app:/var/www/html
-    expose:
-      - "3000"
+      - /vagrant/app:/var/www/html
+    # working_dir:
+    #   - /var/www/html
     ports: 
       - "3000:3000"
     command: ["node"]
   
-  db:
-    from: ubuntu:xenial
-    roles:
-      - Stouts.mongodb
-    command: ["mongod"]
+  # db:
+  #   from: ubuntu:xenial
+  #   roles:
+  #     - Stouts.mongodb
+  #   command: ["mongod"]

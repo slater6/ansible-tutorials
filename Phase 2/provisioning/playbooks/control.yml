@@ -104,8 +104,8 @@
       with_items: 
         - 'cd /vagrant'
         
-    - name: Create new React App
-      command: docker run --rm -v /vagrant:/var -w /var hello-world-app npx create-react-app app
-      args:
-        chdir: /vagrant
-        creates: /vagrant/app/package.json
+    # - name: Create new React App
+    #   command: docker run --rm -v /vagrant:/var -w /var hello-world-app npx create-react-app app
+    #   args:
+    #     chdir: /vagrant
+    #     creates: /vagrant/app/package.json
