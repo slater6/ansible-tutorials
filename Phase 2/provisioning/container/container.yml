@@ -16,6 +16,8 @@ services:
       - geerlingguy.nginx
     ports:
       - "80:80"
+    links:
+      - app
     command: ["nginx", "-g", "daemon off;"]
   
   app:
@@ -25,11 +27,9 @@ services:
       - geerlingguy.nodejs
     volumes:
       - /vagrant/app:/var/www/html
-    # working_dir:
-    #   - /var/www/html
-    ports: 
-      - "3000:3000"
-    command: ["node"]
+    working_dir: /var/www/html
+    restart: always
+    command: ["yarn","start"]
   
   # db:
   #   from: ubuntu:xenial

@@ -10,17 +10,12 @@ __nginx_user: "www-data"
 
 nginx_vhosts:
   - listen: "80"
-    server_name: "ansible.dev"
+    server_name: "ansible.dev 192.168.22.99"
     state: "present"
     template: "{{ nginx_vhost_template }}"
     filename: "ansible.dev"
     extra_parameters: |
       location / {
         proxy_pass http://app:3000;
-        proxy_http_version 2.0;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
       }
 

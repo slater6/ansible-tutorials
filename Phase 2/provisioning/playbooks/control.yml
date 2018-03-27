@@ -37,6 +37,7 @@
       with_items:
         - docker
         - dialout
+        - root
 
     - name: Installing packages
       apt: 

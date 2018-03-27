@@ -52,6 +52,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.network :forwarded_port, guest: 80, host: 8181
   end
 
+
   config.ssh.forward_agent = true
 
   # Sync Folders
@@ -60,6 +61,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     id: "core",
     :nfs => true,
     :mount_options => ["dmode=777", "fmode=777"]
+  else 
+    config.vm.synced_folder ".", "/vagrant", type: "nfs"
   end
   
   config.ssh.insert_key = false
