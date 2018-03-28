@@ -1,7 +1,7 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-hostname        =  "ansible.dev"
+hostname        =  "ansible.com"
 
 # Set a local private network IP address.
 # See http://en.wikipedia.org/wiki/Private_network for explanation
@@ -45,12 +45,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.hostname =  hostname
 
   # Setup Network
-  if Vagrant.has_plugin?("vagrant-auto_network")
-    config.vm.network :private_network, :ip => "0.0.0.0", :auto_network => true
-  else
+  # if Vagrant.has_plugin?("vagrant-auto_network")
+  #   config.vm.network :private_network, :ip => "0.0.0.0", :auto_network => true
+  # else
     config.vm.network :private_network, ip: server_ip
-    config.vm.network :forwarded_port, guest: 80, host: 8181
-  end
+    config.vm.network :forwarded_port, guest: 80, host: 80
+  # end
 
 
   config.ssh.forward_agent = true

@@ -10,10 +10,10 @@ __nginx_user: "www-data"
 
 nginx_vhosts:
   - listen: "80"
-    server_name: "ansible.dev 192.168.22.99"
+    server_name: "ansible.com"
     state: "present"
     template: "{{ nginx_vhost_template }}"
-    filename: "ansible.dev"
+    filename: "ansible.com"
     extra_parameters: |
       location / {
         proxy_pass http://app:3000;
