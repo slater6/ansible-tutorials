@@ -91,6 +91,20 @@
         - { alias: 'npx', command: 'app npx' }
         - { alias: 'node', command: 'app node' }
         - { alias: 'yarn', command: 'app yarn' }
+    
+    - name: Bash aliases functions | Add aliases functions
+      lineinfile:
+        path:  /home/vagrant/.bash_aliases
+        group: vagrant
+        owner: vagrant
+        mode: 0644
+        create: yes
+        line: "{{ item.name }}() { {{ item.command }} }"
+        state: present
+        insertafter: EOF
+      with_items: 
+        
+        - { name: 'ans', command: '(cd /vagrant/provisioning/container && sudo ansible-container "$@")' }
       
     - name: Bash profiles | Add profiles
       lineinfile:

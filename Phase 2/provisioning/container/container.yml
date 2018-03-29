@@ -15,7 +15,7 @@ services:
     roles:
       - geerlingguy.nginx
     ports:
-      - "80:80"
+      - 80:80
     links:
       - app
     command: ["nginx", "-g", "daemon off;"]
@@ -25,6 +25,8 @@ services:
     roles:
       - geerlingguy.git
       - geerlingguy.nodejs
+    expose: 
+      - 35729
     volumes:
       - /vagrant/app:/var/www/html
     working_dir: /var/www/html

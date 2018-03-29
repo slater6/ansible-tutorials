@@ -16,18 +16,17 @@ nginx_vhosts:
     filename: "ansible.com"
     extra_parameters: |
       location / {
-        proxy_pass http://app;
+        proxy_pass http://app:3000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
+        proxy_set_header Connection "upgrade";
         proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
       }
 
-nginx_upstreams:
-  - name: app
-    strategy: "least_conn" # "least_conn", etc.
-    servers: {
-      "app:3000 max_fails=3 fall_timeout=30s"
-    }
+# nginx_upstreams:
+#   - name: app
+#     strategy: "least_conn" # "least_conn", etc.
+#     servers: {
+#       "app:3000 max_fails=3 fall_timeout=30s"
+#     }
 
