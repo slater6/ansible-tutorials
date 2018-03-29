@@ -16,6 +16,7 @@ services:
       - geerlingguy.nginx
     ports:
       - 80:80
+      - 27017:27017
     links:
       - app
     command: ["nginx", "-g", "daemon off;"]
@@ -33,8 +34,10 @@ services:
     restart: always
     command: ["yarn","start"]
   
-  # db:
-  #   from: ubuntu:xenial
-  #   roles:
-  #     - Stouts.mongodb
-  #   command: ["mongod"]
+  db:
+    from: ubuntu:xenial
+    roles:
+      - Stouts.mongodb
+    expose:
+      - 27017
+    command: ["mongod"]
